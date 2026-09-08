@@ -6,7 +6,7 @@
   command:
     cmd: "{{ kubectl }} create --dry-run=server -f -"
     stdin: >-
-      {"apiVersion":"batch/v1","kind":"Job","metadata":{"name":"upgrade-preflight-probe","namespace":"kube-system"},"spec":{"template":{"spec":{"containers":[{"name":"pause","image":"{{ pod_infra_image_repo }}:{{ pod_infra_image_tag }}"}],"restartPolicy":"Never"}}}}
+      {"apiVersion":"batch/v1","kind":"Job","metadata":{"generateName":"upgrade-preflight-probe-","namespace":"kube-system"},"spec":{"template":{"spec":{"containers":[{"name":"pause","image":"{{ pod_infra_image_repo }}:{{ pod_infra_image_tag }}"}],"restartPolicy":"Never"}}}}
   register: preflight_check_result
   retries: "{{ kubeadm_upgrade_preflight_check_retries }}"
   delay: "{{ kubeadm_upgrade_preflight_check_delay }}"
@@ -24,7 +24,7 @@
     msg: >-
       WARNING: Preflight admission dry-run failed after {{ kubeadm_upgrade_preflight_check_retries }} retries.
       The admission pipeline may not be ready. kubeadm upgrade apply may fail with [ERROR CreateJob].
-      See Kubernetes #124237 for details.
+      See Kubernetes issue https://github.com/kubernetes/kubernetes/issues/124237 for details.
   when:
   - kubeadm_upgrade_preflight_check_enabled
   - inventory_hostname == first_kube_control_plane
